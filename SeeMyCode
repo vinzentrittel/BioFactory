@@ -1,0 +1,40 @@
+#include <GL/glew.h>
+
+#include <QApplication>
+#include <QWindow>
+#include <QOpenGLContext>
+#include <QPushButton>
+
+int main(int argc, char **argv) {
+    QApplication app(argc, argv);
+
+    QSurfaceFormat format;
+    format.setVersion(3, 3);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+
+    QWindow window;
+    window.setGeometry(400, 300, 800, 600);
+    window.setSurfaceType(QWindow::OpenGLSurface);
+    window.setFormat(format);
+    window.create();
+
+    QPushButton button("Click me, daddy!", &window);
+    button.setGeometry(0, 0, 400, 40);
+
+    QOpenGLContext context(&window);
+    context.setFormat(window.requestedFormat());
+    context.create();
+    context.makeCurrent(&window);
+
+    glewInit();
+    const char* version = (const char*) glGetString(GL_VERSION);
+    window.setTitle(version);
+
+    glClearColor(1, 1, 1, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    window.show();
+    context.swapBuffers(&window);
+
+    return app.exec();
+}
